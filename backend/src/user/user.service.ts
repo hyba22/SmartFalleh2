@@ -21,9 +21,18 @@ export class UserService {
     }
 
     async create(user: CreateUserDto): Promise<User> {
-        // Hash the password before saving
-        const hashedPassword = await this.passwordHasher.hash(user.password);
-        const userWithHashedPassword = { ...user, password: hashedPassword };
+        // Check if password is already hashed (starts with $2a$, $2b$, or $2y$)
+        const isAlreadyHashed = user.password && 
+            (user.password.startsWith('$2a$') || 
+             user.password.startsWith('$2b$') || 
+             user.password.startsWith('$2y$'));
+        
+        // Only hash if not already hashed
+        const passwordToSave = isAlreadyHashed 
+            ? user.password 
+            : await this.passwordHasher.hash(user.password);
+            
+        const userWithHashedPassword = { ...user, password: passwordToSave };
         return this.userRepository.save(userWithHashedPassword);
     }
 

@@ -26,6 +26,7 @@ export class AuthController {
     }
   }
 
+ 
   @Post('login')
   @ApiOperation({ summary: 'Login user and get JWT token' })
   async login(@Body() loginDto: LoginDto) {
