@@ -90,28 +90,25 @@ export class AuthService {
     }
 
     async signup(signupDto: SignupDto): Promise<AuthResponse> {
-        console.log('[AuthService] Starting signup for:', signupDto.email);
-        
         // Check if user already exists
         const existingUser = await this.userService.findByEmail(signupDto.email);
         if (existingUser) {
-            console.log(`[AuthService] Signup failed - email already in use: ${signupDto.email}`);
             throw new UnauthorizedException('Email already in use');
         }
 
-        // Create the user - password will be hashed in UserService.create()
+        // Hash the password
+        const hashedPassword = await this.passwordHasher.hash(signupDto.password);
+
+        // Create the user
         const { password, ...restOfSignupDto } = signupDto;
         const newUser = await this.userService.create({
             ...restOfSignupDto,
-            password: signupDto.password, // Pass the plain password, it will be hashed in UserService
+            password: hashedPassword,
             region: signupDto.region || '',
             surfaceFerme: signupDto.surfaceFerme ? Number(signupDto.surfaceFerme) : 0,
             nbrVaches: signupDto.nbrVaches ? Number(signupDto.nbrVaches) : 0,
         });
 
-        console.log(`[AuthService] User created successfully: ${newUser.email}`);
-        
-        // Generate token for the new user
         const userResponse = this.toUserResponse(newUser);
         const token = this.generateToken(userResponse);
         
