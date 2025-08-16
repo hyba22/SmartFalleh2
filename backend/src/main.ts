@@ -23,7 +23,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    //origin: 'http://localhost:5173', 
+    origin: 'http://localhost:5173', 
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     preflightContinue: false,
     optionsSuccessStatus: 204,

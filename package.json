@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently -k \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm install && npm run dev",
+    "dev:backend": "cd backend && npm start",
+    "start": "npm run dev:backend",
+    "build": "cd frontend && npm run build"
   },
   "repository": {
     "type": "git",
@@ -15,5 +19,8 @@
     "url": "https://github.com/hyba22/SmartFalleh2/issues"
   },
   "homepage": "https://github.com/hyba22/SmartFalleh2#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
 }
