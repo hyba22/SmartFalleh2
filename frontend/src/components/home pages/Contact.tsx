@@ -58,18 +58,18 @@ const Contact = () => {
         </div>
       </div>
 
-      <div className="mb-12 bg-[#007F3F] w-[100%] h-[400px] p-5 rounded-[25px]">
+      <div className="mb-12 bg-[#007F3F] w-[100%] h-[auto] p-5 rounded-[25px]">
         <h2 className="text-3xl text-[#2c3e50] text-center mb-10 text-white ">
           Notre équipe
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Team Member 1 */}
           <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
             <div className="w-[120px] h-[120px] rounded-full mb-5 overflow-hidden">
               <img 
                 src="/src/assets/profile_picture.jpg" 
                 alt="Jesser Ben Salah" 
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center sm:w-[150px] sm:h-[150px]"
               />
             </div>
             <h4 className="text-xl text-[#2c3e50] mb-2.5 ">
@@ -85,7 +85,7 @@ const Contact = () => {
               <img 
                 src="/src/assets/profile_picture.jpg" 
                 alt="Nawress El Abed" 
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center sm:w-[150px] sm:h-[150px] "
               />
             </div>
             <h4 className="text-xl text-[#2c3e50] mb-2.5 ">
@@ -101,7 +101,7 @@ const Contact = () => {
               <img 
                 src="/src/assets/profile_picture.jpg" 
                 alt="Hiba Bouslahi" 
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center sm:w-[150px] sm:h-[150px]"
               />
             </div>
             <h4 className="text-xl text-[#2c3e50] mb-2.5 ">
@@ -117,7 +117,7 @@ const Contact = () => {
               <img 
                 src="/src/assets/profile_picture.jpg" 
                 alt="Sarra Charfi" 
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center sm:w-[150px] sm:h-[150px]"
               />
             </div>
             <h4 className="text-xl text-[#2c3e50] mb-2.5 ">
