@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { authService } from '../../services/auth.service';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
 
 interface LoginProps {
     onSuccess?: () => void;
@@ -12,6 +13,7 @@ const Login: React.FC<LoginProps> = ({ onSuccess }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { setUserRole } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,13 +26,17 @@ const Login: React.FC<LoginProps> = ({ onSuccess }) => {
         setError('');
         
         try {
-            await authService.login({ email, password });
+            const { user } = await authService.login({ email, password });
+            // Update the auth context with the user's role
+            setUserRole(user.role);
+            
             // Call onSuccess callback if provided
             if (onSuccess) {
                 onSuccess();
             } else {
-                // Default redirection if no callback provided
-                navigate('/profile');
+                // Default redirection based on user role
+                const redirectPath = user.role === 'admin' ? '/dashboard' : '/profile';
+                navigate(redirectPath);
             }
         } catch (error: any) {
             setError(error.message || 'Email ou mot de passe incorrect');

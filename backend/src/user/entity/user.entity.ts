@@ -19,10 +19,10 @@ class User {
     
     @Column({
         type: 'enum',
-        enum: ['user', 'admin', 'agriculteur', 'jury', 'responsable'],
-        default: 'user'
+        enum: [ 'admin', 'agriculteur', 'jury', 'responsable'],
+        default: 'agriculteur'
     })
-    role: 'user' | 'admin' | 'agriculteur' | 'jury' | 'responsable';
+    role: 'admin' | 'agriculteur' | 'jury' | 'responsable';
     
     @Column({ nullable: true })
     nbrVaches: number;

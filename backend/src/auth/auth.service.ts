@@ -20,7 +20,8 @@ type UserResponse = {
   nbrVaches?: number;
 };
 
-export interface AuthResponse extends UserResponse {
+export interface AuthResponse {
+  user: UserResponse;
   access_token: string;
 }
 
@@ -42,6 +43,15 @@ export class AuthService {
             surfaceFerme: userData.surfaceFerme || undefined,
             nbrVaches: userData.nbrVaches,
         };
+    }
+
+    private generateToken(user: UserResponse): string {
+        const payload = { 
+            email: user.email, 
+            sub: user.id,
+            role: user.role
+        };
+        return this.jwtService.sign(payload);
     }
 
     async validateUser(email: string, password: string): Promise<UserResponse> {
@@ -84,7 +94,7 @@ export class AuthService {
         const user = await this.validateUser(loginDto.email, loginDto.password);
         const token = this.generateToken(user);
         return { 
-            ...user, 
+            user,
             access_token: token 
         };
     }
@@ -98,32 +108,32 @@ export class AuthService {
 
         // Hash the password
         const hashedPassword = await this.passwordHasher.hash(signupDto.password);
-
-        // Create the user
-        const { password, ...restOfSignupDto } = signupDto;
-        const newUser = await this.userService.create({
-            ...restOfSignupDto,
+        
+        // Prepare user data according to CreateUserDto
+        const userData = {
+            email: signupDto.email,
             password: hashedPassword,
+            nom: signupDto.nom,
+            prenom: signupDto.prenom,
+            telephone: signupDto.telephone || '',
+            adresse: signupDto.adresse || '',
+            role: signupDto.role || 'agriculteur', // Default role if not specified
             region: signupDto.region || '',
             surfaceFerme: signupDto.surfaceFerme ? Number(signupDto.surfaceFerme) : 0,
             nbrVaches: signupDto.nbrVaches ? Number(signupDto.nbrVaches) : 0,
-        });
-
+        };
+        
+        // Create the user
+        const newUser = await this.userService.create(userData as any); // Temporary any to bypass type checking
         const userResponse = this.toUserResponse(newUser);
+        
+        // Generate token
         const token = this.generateToken(userResponse);
         
-        return { 
-            ...userResponse,
-            access_token: token 
-        } as AuthResponse;
+        return {
+            user: userResponse,
+            access_token: token
+        };
     }
 
-    private generateToken(user: UserResponse): string {
-        const { id, ...userData } = user;
-        const payload = {
-            sub: id,
-            ...userData
-        };
-        return this.jwtService.sign(payload);
-    }
 }

@@ -1,7 +1,7 @@
 import { Link as ScrollLink } from 'react-scroll';
 import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { authService } from '../../services/auth.service';
+import { authService } from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../ui/Modal';
 import Login from '../connection/Login';

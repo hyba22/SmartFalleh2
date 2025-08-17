@@ -1,4 +1,5 @@
-import { Controller, Post, Body, UseGuards, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, HttpException, HttpStatus, UnauthorizedException, Get, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -44,4 +45,38 @@ export class AuthController {
     }
   }
 
+  @Get('me')
+  @ApiOperation({ summary: 'Get current user information' })
+  @ApiResponse({ status: 200, description: 'Returns the current user information' })
+  async getProfile(@Req() req: Request) {
+    try {
+      // The user should be attached to the request by the JWT strategy
+      const user = (req as any).user;
+      if (!user) {
+        throw new UnauthorizedException('User not authenticated');
+      }
+      
+      // Return only the necessary user information
+      return {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        nom: user.nom,
+        prenom: user.prenom,
+        telephone: user.telephone,
+        adresse: user.adresse,
+        region: user.region,
+        surfaceFerme: user.surfaceFerme,
+        nbrVaches: user.nbrVaches
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new HttpException(
+        { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: 'Internal server error' },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

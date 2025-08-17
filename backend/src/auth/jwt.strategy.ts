@@ -89,13 +89,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('Invalid token payload');
       }
 
+      // Create a complete user object with all available fields
       const user: ValidatedUser = {
         id: userId,
         email: payload.email,
         role: payload.role || 'user',
         nom: payload.nom || '',
         prenom: payload.prenom || '',
-        telephone: payload.telephone || ''
+        telephone: payload.telephone || '',
+        adresse: payload.adresse,
+        region: payload.region,
+        surfaceFerme: payload.surfaceFerme,
+        nbrVaches: payload.nbrVaches
       };
 
       this.logger.debug(`JWT validation successful for user: ${user.email}`);

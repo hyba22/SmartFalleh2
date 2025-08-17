@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { authService } from '../../services/auth.service';
-import type { SignupData } from '../../services/auth.service';
+import { authService } from '../../services/authService';
+import type { SignupData } from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
 
 interface SignupProps {

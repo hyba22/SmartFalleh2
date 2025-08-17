@@ -1,6 +1,6 @@
 import { IsEmail, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
-type UserRole = 'user' | 'admin' | 'agriculteur' | 'jury' | 'responsable';
+type UserRole = 'admin' | 'agriculteur' | 'jury' | 'responsable';
 
 export class UpdateUserDto {
     @IsString()
@@ -19,8 +19,8 @@ export class UpdateUserDto {
     @IsOptional()
     readonly password?: string;
 
-    @IsEnum(['user', 'admin', 'agriculteur', 'jury', 'responsable'], {
-        message: 'Role must be one of: user, admin, agriculteur, jury, responsable'
+    @IsEnum([ 'admin', 'agriculteur', 'jury', 'responsable'], {
+        message: 'Role must be one of: admin, agriculteur, jury, responsable'
     })
     @IsOptional()
     readonly role?: UserRole;

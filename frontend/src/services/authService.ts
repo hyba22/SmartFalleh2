@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { UserRole } from '../components/types/Roles';
 
 const API_URL = 'http://localhost:3000/api/auth';
 
@@ -7,7 +8,7 @@ export interface SignupData {
   password: string;
   nom: string;
   prenom: string;
-  role: string;
+  role: UserRole;
   telephone: string;
   adresse: string;
   region?: string;
@@ -20,13 +21,27 @@ export interface LoginData {
   password: string;
 }
 
+export interface UserData {
+  id: string;
+  email: string;
+  role: UserRole;
+  nom: string;
+  prenom: string;
+}
+
+export interface AuthResponse {
+  access_token: string;
+  user: UserData;
+}
+
 export const authService = {
-  async signup(userData: SignupData) {
+  async signup(userData: SignupData): Promise<AuthResponse> {
     try {
-      const response = await axios.post(`${API_URL}/signup`, userData);
+      const response = await axios.post<AuthResponse>(`${API_URL}/signup`, userData);
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('userRole', response.data.user.role);
       }
       return response.data;
     } catch (error: any) {
@@ -36,12 +51,13 @@ export const authService = {
     }
   },
 
-  async login(credentials: LoginData) {
+  async login(credentials: LoginData): Promise<AuthResponse> {
     try {
-      const response = await axios.post(`${API_URL}/login`, credentials);
+      const response = await axios.post<AuthResponse>(`${API_URL}/login`, credentials);
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('userRole', response.data.user.role);
       }
       return response.data;
     } catch (error: any) {
@@ -54,20 +70,13 @@ export const authService = {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
   },
 
-  getCurrentUser() {
+  getCurrentUser(): UserData | null {
     try {
-      const user = localStorage.getItem('user');
-      if (!user) return null;
-      // Check if the string is valid JSON
-      const parsed = JSON.parse(user);
-      // Validate the parsed object has required fields
-      if (parsed && typeof parsed === 'object' && 'email' in parsed) {
-        return parsed;
-      }
-      // If we get here, the data is invalid - clean it up
-      localStorage.removeItem('user');
+      const userStr = localStorage.getItem('user');
+      if (userStr) return JSON.parse(userStr);
       return null;
     } catch (e) {
       // If parsing fails, clean up the invalid data
@@ -76,13 +85,27 @@ export const authService = {
     }
   },
 
-  getToken() {
+  getCurrentUserRole(): UserRole | null {
+    return localStorage.getItem('userRole') as UserRole || null;
+  },
+
+  getToken(): string | null {
     return localStorage.getItem('token');
   },
 
-  isAuthenticated() {
-    return !!this.getToken();
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('token');
   },
+
+  hasRole(requiredRole: UserRole): boolean {
+    const userRole = this.getCurrentUserRole();
+    return userRole === requiredRole;
+  },
+
+  hasAnyRole(roles: UserRole[]): boolean {
+    const userRole = this.getCurrentUserRole();
+    return userRole ? roles.includes(userRole) : false;
+  }
 };
 
 // Add axios interceptor to include token in requests

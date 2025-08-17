@@ -7,21 +7,22 @@ export class ValidatedUser {
   @ApiProperty({ description: 'User\'s email address' })
   email: string;
 
-  @ApiProperty({ description: 'User\'s first name' })
-  nom?: string;
+  @ApiProperty({ description: 'User\'s first name', required: false })
+  nom: string;
 
-  @ApiProperty({ description: 'User\'s last name' })
-  prenom?: string;
+  @ApiProperty({ description: 'User\'s last name', required: false })
+  prenom: string;
 
-  @ApiProperty({ description: 'User\'s phone number' })
-  telephone?: string;
+  @ApiProperty({ description: 'User\'s phone number', required: false })
+  telephone: string;
 
   @ApiProperty({ 
     description: 'User\'s role', 
-    enum: ['user', 'agriculteur', 'jury', 'responsable'],
-    default: 'user' 
+    enum: ['user', 'admin', 'agriculteur', 'jury', 'responsable'],
+    default: 'user',
+    required: true
   })
-  role: string;
+  role: 'user' | 'admin' | 'agriculteur' | 'jury' | 'responsable';
 
   @ApiProperty({ description: 'User\'s address', required: false })
   adresse?: string;
@@ -29,10 +30,18 @@ export class ValidatedUser {
   @ApiProperty({ description: 'User\'s region', required: false })
   region?: string;
 
-  @ApiProperty({ description: 'User\'s surface', required: false })
-  surfaceFerme?: string;
+  @ApiProperty({ 
+    description: 'Farm surface area', 
+    type: Number,
+    required: false 
+  })
+  surfaceFerme?: number;
 
-  @ApiProperty({ description: 'User\'s number of cows', required: false })
+  @ApiProperty({ 
+    description: 'Number of cows in the farm',
+    type: Number,
+    required: false 
+  })
   nbrVaches?: number;
 
 }
