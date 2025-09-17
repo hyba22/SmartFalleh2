@@ -13,7 +13,7 @@ import User from './user/entity/user.entity';
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'mysql',
       host: process.env.DB_HOST,
-      port: 3306,
+      port: parseInt(process.env.DB_PORT || '3306', 10),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,

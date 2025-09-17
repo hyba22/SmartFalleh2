@@ -13,7 +13,7 @@ const Profile = () => {
                                 <input
                                     type="text"
                                     placeholder="Search..."
-                                    className="w-full px-4 py-2 pl-10 rounded-[50px] border border-[#4DAC70] focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                    className="w-full px-4 py-2 pl-10 rounded-[50px] border border-[#4DAC70] focus:outline-none focus:ring-1 focus:ring-gray-400"
                                 />
                                 <FiSearch className="absolute left-3 top-3 text-[#4DAC70]" />
                             </div>
