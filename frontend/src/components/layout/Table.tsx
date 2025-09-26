@@ -109,8 +109,8 @@ export function Table<T extends { id: string | number }>({
   return (
     <div className={`bg-white rounded-lg shadow ${className}`}>
       {searchable && (
-        <div className="p-4 border-b">
-          <div className="relative">
+        <div className="p-4 border-b flex flex-row items-center justify-between gap-4">
+          <div className="relative flex-grow max-w-2xl">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
             </div>
@@ -125,6 +125,9 @@ export function Table<T extends { id: string | number }>({
               }}
             />
           </div>
+          <button className="bg-[#8BC9A2] hover:bg-[#7ab892] text-black py-2 px-4 rounded-lg w-[150px] transition-colors duration-200 font-medium whitespace-nowrap">
+            Filtrer
+          </button>
         </div>
       )}
 
@@ -160,18 +163,20 @@ export function Table<T extends { id: string | number }>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {paginatedData.length > 0 ? (
-              paginatedData.map((item) => (
+              paginatedData.map((item, index) => (
                 <tr
                   key={item.id}
                   className={`${
-                    onRowClick ? 'hover:bg-gray-50 cursor-pointer' : ''
-                  }`}
+                    onRowClick ? 'cursor-pointer hover:opacity-90' : ''
+                  } ${index % 2 === 0 ? 'bg-white' : 'bg-[#8BC9A2]'}`}
                   onClick={() => onRowClick?.(item)}
                 >
                   {columns.map((column, colIndex) => (
                     <td
                       key={colIndex}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                      className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        index % 2 === 0 ? 'text-gray-900' : 'text-gray-900'
+                      }`}
                     >
                       {typeof column.accessor === 'function'
                         ? column.accessor(item)

@@ -1,3 +1,4 @@
+import { FiEdit2, FiTrash2, FiEye } from 'react-icons/fi';
 import { Table } from '../layout/Table';
 import type { Column } from '../layout/Table';
 import React from 'react';
@@ -20,8 +21,8 @@ const users: User[] = [
     name: 'John Doe',
     email: 'john@example.com',
     role: 'Admin',
-    status: 'active',
-    lastLogin: '2025-09-26T10:30:00',
+   region: 'Region 1',
+   agglomeration: 'Agglomeration 1',
     avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
   },
   {
@@ -29,8 +30,36 @@ const users: User[] = [
     name: 'Jane Smith',
     email: 'jane@example.com',
     role: 'User',
-    status: 'inactive',
-    lastLogin: '2025-09-25T15:45:00',
+    region: 'Region 2',
+    agglomeration: 'Agglomeration 2',
+    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+  },
+  {
+    id: '2',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    role: 'User',
+    region: 'Region 2',
+    agglomeration: 'Agglomeration 2',
+    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+  },
+  {
+    id: '2',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    role: 'User',
+   region: 'Region 2',
+   agglomeration: 'Agglomeration 2',
+   avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+
+  },
+  {
+    id: '2',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    role: 'User',
+    region: 'Region 2',
+    agglomeration: 'Agglomeration 2',
     avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
   },
 ];
@@ -38,7 +67,12 @@ const users: User[] = [
 // Define columns with proper typing
 const columns: Column<User>[] = [
   {
-    header: 'Name',
+    header: 'Nom',
+    accessor: (user: User) => user.name,
+    sortable: true,
+  },
+  {
+    header: 'Prénom',
     accessor: (user: User) => user.name,
     sortable: true,
   },
@@ -48,26 +82,36 @@ const columns: Column<User>[] = [
     sortable: true,
   },
   {
+    header: 'Région',
+    accessor: (user: User) => user.region,
+    sortable: true,
+  },
+  {
+    header: 'Agglomération',
+    accessor: (user: User) => user.agglomeration,
+    sortable: true,
+  },
+  {
     header: 'Role',
     accessor: (user: User) => user.role,
     sortable: true,
   },
+
   {
-    header: 'Status',
+    header: 'Actions',
     accessor: (user: User) => (
-      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-        user.status === 'active' ? 'bg-green-100 text-green-800' :
-        user.status === 'inactive' ? 'bg-gray-100 text-gray-800' :
-        'bg-yellow-100 text-yellow-800'
-      }`}>
-        {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-      </span>
+      <div className="flex gap-2">
+        <button className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full">
+          <FiEye className="w-4 h-4" />
+        </button>
+        <button className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-full">
+          <FiEdit2 className="w-4 h-4" />
+        </button>
+        <button className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full">
+          <FiTrash2 className="w-4 h-4" />
+        </button>
+      </div>
     ),
-  },
-  {
-    header: 'Last Login',
-    accessor: (user: User) => new Date(user.lastLogin).toLocaleString(),
-    sortable: true,
   },
 ];
 
