@@ -53,7 +53,7 @@ const Navbar = () => {
 
     const handleSuccessfulLogin = () => {
         setIsLoginModalOpen(false);
-        navigate('/profile');
+        navigate('/dashboard');
     };
 
     const handleSuccessfulSignup = () => {

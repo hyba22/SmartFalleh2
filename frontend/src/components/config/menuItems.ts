@@ -34,7 +34,7 @@ export const adminMenuItems: MenuItem[] = [
     children: [
       {
         title: 'Liste des Utilisateurs',
-        path: '/admin/users',
+        path: '/userslist',
         icon: createIcon(FiUsers),
         allowedRoles: [UserRole.ADMIN],
       },
@@ -52,13 +52,6 @@ export const adminMenuItems: MenuItem[] = [
     icon: createIcon(FiUsers),
     allowedRoles: [UserRole.ADMIN],
   },
-  {
-    title: 'Paramètres',
-    path: '/parametres',
-    icon: createIcon(FiSettings),
-    allowedRoles: [UserRole.ADMIN],
-  },
-
 ];
 
 // Agriculteur specific menu items
@@ -83,7 +76,7 @@ export const agriculteurMenuItems: MenuItem[] = [
   },
   {
     title: 'Paramètres',
-    path: '/parametres',
+    path: '/settings',
     icon: createIcon(FiSettings),
     allowedRoles: [UserRole.AGRICULTEUR],
   },
@@ -106,7 +99,7 @@ export const responsableMenuItems: MenuItem[] = [
   },
   {
     title: 'Paramètres',
-    path: '/parametres',
+    path: '/settings',
     icon: createIcon(FiSettings),
     allowedRoles: [UserRole.RESPONSABLE],
   },
@@ -128,7 +121,7 @@ export const juryMenuItems: MenuItem[] = [
   },
   {
     title: 'Paramètres',
-    path: '/parametres',
+    path: '/settings',
     icon: createIcon(FiSettings),
     allowedRoles: [UserRole.JURY],
   },

@@ -64,14 +64,14 @@ const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center p-6 w-full">
+        <div className="flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 w-full">
             {error && (
-                <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                <div className="mb-3 p-2 sm:p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm sm:text-base">
                     {error}
                 </div>
             )}
-            <form onSubmit={handleSubmit} className="w-full">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="h-[80%] w-full">
+                <div className=" grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                 <div className="w-full">
                     <input
                         type="text"

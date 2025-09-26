@@ -34,9 +34,8 @@ const Login: React.FC<LoginProps> = ({ onSuccess }) => {
             if (onSuccess) {
                 onSuccess();
             } else {
-                // Default redirection based on user role
-                const redirectPath = user.role === 'admin' ? '/dashboard' : '/profile';
-                navigate(redirectPath);
+                // Always redirect to dashboard after login
+                navigate('/dashboard');
             }
         } catch (error: any) {
             setError(error.message || 'Email ou mot de passe incorrect');

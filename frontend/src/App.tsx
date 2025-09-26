@@ -4,17 +4,20 @@ import { Route, Routes, BrowserRouter as Router, Navigate } from 'react-router-d
 import { scroller } from 'react-scroll';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+// Components
+import Navbar from './components/navbar/Navbar';
+import Footer from './components/footer/Footer';
+
+// Pages
 import Accueil from './components/home pages/Accueil';
 import Contact from './components/home pages/Contact';
 import About from './components/home pages/About';
-import Navbar from './components/navbar/Navbar';
-import Footer from './components/footer/Footer';
-import Profile from './components/profiles/Profile';
-import Dashboard from './components/dashboard/Dashboard';
+import Profile from './components/profiles/ProfileHeader';
 import Settings from './components/settings/Settings';
-import SideBar from './components/sidebar/SideBar';
 import Login from './components/connection/Login';
 import AuthTest from './components/test/AuthTest';
+import DashboardLayout from './components/layout/DashboardLayout';
+import UserList from './components/dashboard/UserList';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRoles }: { children: React.ReactNode, requiredRoles?: string[] }) => {
@@ -25,10 +28,16 @@ const ProtectedRoute = ({ children, requiredRoles }: { children: React.ReactNode
   }
 
   if (!userRole) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
-  if (requiredRoles && !requiredRoles.includes(userRole)) {
+  // If no specific roles are required, any authenticated user can access
+  if (!requiredRoles) {
+    return children;
+  }
+
+  // If specific roles are required, check if user has one of them
+  if (requiredRoles.length > 0 && !requiredRoles.includes(userRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
@@ -62,65 +71,42 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="relative min-h-screen">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={
-              <PublicLayout>
-                <Accueil />
-                <About />
-                <Contact />
-              </PublicLayout>
-            } />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={
+            <>
+              <Navbar />
+              <Accueil />
+              <About />
+              <Contact />
+              <Footer />
+            </>
+          } />
 
-            <Route path="/login" element={
-              <PublicLayout>
-                <Login />
-              </PublicLayout>
-            } />
-            
-            {/* Test route - remove in production */}
-            <Route path="/test-auth" element={
-              <PublicLayout>
-                <AuthTest />
-              </PublicLayout>
-            } />
+          <Route path="/login" element={<Login />} />
+          
+          {/* Test route - remove in production */}
+          <Route path="/test-auth" element={<AuthTest />} />
 
-            {/* Protected Routes */}
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
+          {/* Dashboard Layout - All dashboard routes are nested here */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="userslist" element={<UserList />} />
+          </Route>
 
-            <Route path="/dashboard" element={
-              <ProtectedRoute requiredRoles={['admin']}>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } />
-
-            <Route path="/sidebar" element={
-              <ProtectedRoute>
-                <SideBar />
-              </ProtectedRoute>
-            } />
-
-            {/* 404 Route */}
-            <Route path="*" element={
-              <PublicLayout>
-                <div className="flex items-center justify-center h-[60vh]">
-                  <h2 className="text-2xl font-bold">404 - Page Not Found</h2>
-                </div>
-              </PublicLayout>
-            } />
-          </Routes>
-        </div>
+          {/* 404 Route */}
+          <Route path="*" element={
+            <div className="flex items-center justify-center h-screen">
+              <h2 className="text-2xl font-bold">404 - Page Not Found</h2>
+            </div>
+          } />
+        </Routes>
       </Router>
     </AuthProvider>
   );

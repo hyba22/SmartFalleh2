@@ -12,30 +12,49 @@ interface MenuItemType {
   allowedRoles?: string[];
 }
 
+interface SideBarProps {
+  onClose?: () => void;
+}
+
 interface MenuItemProps {
   item: MenuItemType;
   isChild?: boolean;
   isOpen?: boolean;
   onToggle?: () => void;
+  onClose?: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ item, isChild = false, isOpen = false, onToggle }) => {
-  const navigate = useNavigate();
+const MenuItem: React.FC<MenuItemProps> = ({ item, isChild = false, isOpen = false, onToggle, onClose }) => {
   const hasChildren = item.children && item.children.length > 0;
+  // NavLink will handle the active state
   
   const handleClick = (e: React.MouseEvent) => {
     if (hasChildren) {
       e.preventDefault();
       if (onToggle) onToggle();
-    } else {
-      navigate(item.path);
+    } else if (onClose) {
+      onClose();
     }
+  };
+
+  // Build the correct path - prepend /dashboard if it's not already there
+  const buildPath = (path: string) => {
+    if (path === '/') return '/dashboard';
+    return path.startsWith('/dashboard') ? path : `/dashboard${path}`;
   };
 
   return (
     <div className={`${isChild ? 'ml-4' : ''}`}>
       <NavLink
-        to={item.path}
+        to={buildPath(item.path)}
+        end={!hasChildren}
+        onClick={(e) => {
+          handleClick(e);
+          // Close the sidebar when a menu item is clicked (for mobile)
+          if (!hasChildren && onClose) {
+            onClose();
+          }
+        }}
         className={({ isActive }) => 
           `flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors duration-200 ${
             isActive 
@@ -43,7 +62,6 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isChild = false, isOpen = fal
               : 'text-gray-700 hover:bg-green-100 hover:text-green-600'
           }`
         }
-        onClick={handleClick}
       >
         <span className="mr-3">{item.icon}</span>
         <span className="flex-1">{item.title}</span>
@@ -69,19 +87,20 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isChild = false, isOpen = fal
   );
 };
 
-const SideBar = () => {
+const SideBar: React.FC<SideBarProps> = ({ onClose }) => {
   const { userRole, logout } = useAuth();
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const menuItems = getAllMenuItems(userRole);
 
   // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
-  }, [location]);
+    if (onClose) onClose();
+  }, [location.pathname, onClose]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -106,9 +125,11 @@ const SideBar = () => {
     }));
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    const success = await logout();
+    if (success) {
+      navigate('/', { replace: true });
+    }
   };
 
   return (
