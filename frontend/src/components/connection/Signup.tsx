@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { authService } from '../../services/authService';
 import type { SignupData } from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 interface SignupProps {
     onSuccess?: () => void;
@@ -22,6 +23,7 @@ const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
 
 
     const navigate = useNavigate();
+    useAuth(); // We still need to call useAuth to maintain the hook order
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -48,14 +50,15 @@ const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
                 nbrVaches: nbrVaches ? parseInt(nbrVaches) : undefined,
             };
 
+            // Just sign up the user without logging in
             await authService.signup(userData);
-            // Call onSuccess callback if provided
+            // Close the modal if onSuccess is provided
             if (onSuccess) {
                 onSuccess();
-            } else {
-                // Default redirection if no callback provided
-                navigate('/dashboard');
             }
+            // Show success message and navigate to home page
+            alert('Inscription réussie ! Veuillez vous connecter avec vos identifiants.');
+            navigate('/');
         } catch (error: any) {
             setError(error.message || 'Une erreur est survenue lors de l\'inscription');
         } finally {

@@ -53,4 +53,25 @@ export const updateUser = async (userId: string, userData: UpdateUserData) => {
     }
     throw new Error('An error occurred while updating user');
   }
+
 };
+
+//Getting all users 
+export const getAllUsers = async () => {
+    try {
+      const response = await api.get('/user');
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Handle specific error responses from the server
+        if (error.response) {
+          throw new Error(error.response.data.message || 'Failed to fetch users');
+        } else if (error.request) {
+          throw new Error('No response received from server');
+        }
+      }
+      throw new Error('An error occurred while fetching users');
+    }
+  };
+
+

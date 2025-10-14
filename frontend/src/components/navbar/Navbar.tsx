@@ -8,7 +8,7 @@ import Login from '../connection/Login';
 import Signup from '../connection/Signup';
 import SignupModal from '../ui/SignupModal';
 import { FiMenu, FiX } from 'react-icons/fi';
-
+import logo from '../../assets/logo test.jpg'
 const Navbar = () => {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
@@ -68,7 +68,7 @@ const Navbar = () => {
                 <div className="h-full flex items-center justify-between">
                     {/* Logo */}
                     <NavLink to="/" className="text-xl md:text-2xl font-bold ml-2 md:ml-10 lg:ml-20 cursor-pointer">
-                        Logo
+                        <img className="w-[150px] h-[100px]" src={logo} alt="" />
                     </NavLink>
 
                     {/* Desktop Navigation */}

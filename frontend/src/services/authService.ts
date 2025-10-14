@@ -35,15 +35,11 @@ export interface AuthResponse {
 }
 
 export const authService = {
-  async signup(userData: SignupData): Promise<AuthResponse> {
+  async signup(userData: SignupData): Promise<{ user: UserData }> {
     try {
       const response = await axios.post<AuthResponse>(`${API_URL}/signup`, userData);
-      if (response.data.access_token) {
-        localStorage.setItem('token', response.data.access_token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        localStorage.setItem('userRole', response.data.user.role);
-      }
-      return response.data;
+      // Return only the user data without setting auth tokens
+      return { user: response.data.user };
     } catch (error: any) {
       throw new Error(
         error.response?.data?.message || 'Erreur lors de l\'inscription'
