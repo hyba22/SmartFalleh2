@@ -12,7 +12,7 @@ export interface UpdateUserData {
 
 // Create an axios instance with default config
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // API base URL
+  baseURL: 'http://localhost:3008/api', // API base URL
   headers: {
     'Content-Type': 'application/json',
   },

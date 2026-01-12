@@ -7,6 +7,7 @@ import { PasswordHasher } from '../common/password-hasher';
 
 @Injectable()
 export class UserService {
+    [x: string]: any;
     constructor(
         @InjectRepository(User) private userRepository: Repository<User>,
         private passwordHasher: PasswordHasher
@@ -14,6 +15,10 @@ export class UserService {
 
     async findAll(): Promise<User[]> {
         return this.userRepository.find();
+    }
+
+    async findByRole(role: 'admin' | 'agriculteur' | 'jury' | 'responsable'): Promise<User[]> {
+    return this.userRepository.find({ where: { role } });
     }
 
     async findOne(id: number): Promise<User | null> {

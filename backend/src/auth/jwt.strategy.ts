@@ -4,61 +4,34 @@ import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { ValidatedUser } from './dto/validated-user.dto';
 import { Request } from 'express';
+import { TokenBlacklistService } from './token-blacklist.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtStrategy.name);
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private tokenBlacklist: TokenBlacklistService, // inject blacklist service
+  ) {
     const secret = configService.get<string>('JWT_SECRET');
-    
     if (!secret) {
       throw new Error('JWT_SECRET is not defined in environment variables');
     }
-    
-    // token function
+
     const options: StrategyOptions = {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
           try {
-            // 1. Try to extract token from Authorization header
             const authHeader = req.headers.authorization;
             if (authHeader) {
               const [type, token] = authHeader.split(' ');
-              if (type === 'Bearer' && token) {
-                this.logger.debug('Token extracted from Authorization header');
-                return token;
-              }
-              this.logger.warn('Malformed Authorization header format');
+              if (type === 'Bearer' && token) return token;
             }
-            
-            // 2. Try to extract from cookies
-            if (req.cookies?.['access_token']) {
-              const token = req.cookies['access_token'];
-              if (token) {
-                this.logger.debug('Token extracted from cookies');
-                return token;
-              }
-            }
-            
-            // 3. Try to extract from query parameters
-            if (req.query?.token) {
-              const token = Array.isArray(req.query.token) 
-                ? req.query.token[0] 
-                : req.query.token;
-              if (token) {
-                this.logger.debug('Token extracted from query parameters');
-                return token;
-              }
-            }
-            
-            // 4. Debug information
-            this.logger.warn('No JWT token found in request. Available headers:', 
-              Object.keys(req.headers).join(', '));
+            if (req.cookies?.['access_token']) return req.cookies['access_token'];
+            if (req.query?.token) return Array.isArray(req.query.token) ? req.query.token[0] : req.query.token;
             return null;
-            
-          } catch (error) {
-            this.logger.error('Error extracting JWT token:', error);
+          } catch {
             return null;
           }
         },
@@ -67,47 +40,36 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: secret,
       passReqToCallback: true,
     };
-    
+
     super(options);
   }
 
-  async validate(payload: any): Promise<ValidatedUser> {
-    try {
-      this.logger.debug(`Validating JWT payload: ${JSON.stringify(payload)}`);
-      
-      if (!payload) {
-        this.logger.warn('No payload provided in JWT');
-        throw new UnauthorizedException('Invalid token');
-      }
+  async validate(payload: any, req: Request): Promise<ValidatedUser> {
+    const token = req.headers.authorization?.split(' ')[1];
 
-      // Allow both 'sub' and 'id' fields in the payload
-      const userId = payload.sub || payload.id;
-      
-      // Basic payload validation
-      if (!userId || !payload.email) {
-        this.logger.warn('Invalid JWT payload - missing required fields');
-        throw new UnauthorizedException('Invalid token payload');
-      }
-
-      // Create a complete user object with all available fields
-      const user: ValidatedUser = {
-        id: userId,
-        email: payload.email,
-        role: payload.role || 'user',
-        nom: payload.nom || '',
-        prenom: payload.prenom || '',
-        telephone: payload.telephone || '',
-        adresse: payload.adresse,
-        region: payload.region,
-        surfaceFerme: payload.surfaceFerme,
-        nbrVaches: payload.nbrVaches
-      };
-
-      this.logger.debug(`JWT validation successful for user: ${user.email}`);
-      return user;
-    } catch (error) {
-      this.logger.error(`JWT validation failed: ${error.message}`, error.stack);
-      throw new UnauthorizedException('Invalid token');
+    if (token && this.tokenBlacklist.has(token)) {
+      this.logger.warn(`Blacklisted token attempted: ${token.substring(0, 10)}...`);
+      throw new UnauthorizedException('Token has been revoked');
     }
+
+    if (!payload) throw new UnauthorizedException('Invalid token');
+
+    const userId = payload.sub || payload.id;
+    if (!userId || !payload.email) throw new UnauthorizedException('Invalid token payload');
+
+    const user: ValidatedUser = {
+      id: userId,
+      email: payload.email,
+      role: payload.role || 'user',
+      nom: payload.nom || '',
+      prenom: payload.prenom || '',
+      telephone: payload.telephone || '',
+      adresse: payload.adresse,
+      region: payload.region,
+      surfaceFerme: payload.surfaceFerme,
+      nbrVaches: payload.nbrVaches,
+    };
+
+    return user;
   }
 }

@@ -32,7 +32,7 @@ async function bootstrap() {
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3008);
 }
 
 bootstrap();
